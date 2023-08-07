@@ -23,10 +23,10 @@ export default function Home() {
             <div className="flex flex-col">
               <div className="flex flex-row justify-around py-8">
                 <div className="flex flex-row">
-                  <img
+                  {/* <img
                     src="https://pps.whatsapp.net/v/t61.24694-24/347247517_221087780718195_3955007943297666736_n.jpg?ccb=11-4&oh=01_AdQa1zw9tJ3EGBT5aLUJSNb73TGLrTdu0aYmcBRV99SkxQ&oe=64DE4E00"
                     className="h-[400px]"
-                  />
+                  /> */}
                 </div>
                 <div className="flex flex-row">
                   <LoginCard />{" "}
