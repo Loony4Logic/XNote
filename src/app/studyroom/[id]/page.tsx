@@ -8,6 +8,7 @@ import { useEffect, useRef, useState } from "react";
 import LayoutSkeleton from "@/components/LayoutSkeleton";
 import TranscriptBox from "@/components/TranscriptBox";
 import ReactPlayer from "react-player";
+import { debounce } from "lodash";
 
 const TranscriptData = [
   { text: "I am tring", time: "0:1" },
@@ -41,6 +42,15 @@ export default function Studyroom({ params }: { params: { id: string } }) {
   const [play, setPlay] = useState<boolean>(false);
   const [value, setValue] = useState<string | undefined>("**Hello world!!!**");
 
+  const syncData = debounce(async (data) => {
+    const { error } = await supabase
+      .from("studyroom")
+      .update({ note: data })
+      .eq("id", params.id);
+    console.log("data sent");
+    if (error) console.error(error);
+  }, 10000);
+
   const handlePlayPause = () => {
     setPlay(!play);
   };
@@ -53,7 +63,10 @@ export default function Studyroom({ params }: { params: { id: string } }) {
         .eq("id", params.id);
 
       if (error) throw new Error("DED");
-      if (data) setData(data[0]);
+      if (data) {
+        setData(data[0]);
+        setValue(data[0]["note"]);
+      }
       console.log(data[0]);
     }
     getStudyroomData();
@@ -94,7 +107,7 @@ export default function Studyroom({ params }: { params: { id: string } }) {
             <hr />
             <br />
             <div>
-              <Editor value={value} setValue={setValue} />
+              <Editor value={value} setValue={setValue} syncData={syncData} />
             </div>
           </div>
         </div>

@@ -8,15 +8,18 @@ const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 export default function Editor({
   value,
   setValue,
+  syncData,
 }: {
   value: string | undefined;
   setValue: Function;
+  syncData: Function;
 }) {
   return (
     <MDEditor
       value={value}
       onChange={(value: string | undefined) => {
         setValue(value);
+        syncData(value);
         return;
       }}
       height={250}
