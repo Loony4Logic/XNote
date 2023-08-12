@@ -1,28 +1,28 @@
 "use client";
 import Menu from "@/components/Menu";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuIndicator,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
-  NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
-import { Search } from "lucide-react";
 
-export default function StudyroomLayout({
+export default function VideoEditorLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: {
+    id: string;
+  };
 }) {
   return (
     <div>
       <div className="hidden flex-col md:flex">
         <div className="border-b">
-          <div className="flex h-16 items-center px-4 w-full justify-between">
+          <div className="flex h-16 items-center w-full px-4 justify-between">
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
@@ -38,7 +38,7 @@ export default function StudyroomLayout({
                 </NavigationMenuItem>
               </NavigationMenuList>
             </NavigationMenu>
-            <div className="ml-5 flex items-center space-x-4">
+            <div className="mr-1 flex items-center space-x-4">
               <Menu />
             </div>
           </div>
