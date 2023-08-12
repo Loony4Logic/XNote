@@ -7,7 +7,14 @@ export default function LayoutSkeleton() {
         <Skeleton className="w-3/4"></Skeleton>
         <Skeleton className="w-1/4"></Skeleton>
       </div>
-      <Skeleton className="h-1/2"></Skeleton>
+      <div className="h-1/2">
+        <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
+          Notes:
+        </h2>
+        <hr />
+        <br />
+        <Skeleton className="h-full" />
+      </div>
     </div>
   );
 }
