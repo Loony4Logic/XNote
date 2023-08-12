@@ -58,6 +58,8 @@ export function LoginCard() {
       password,
     });
 
+    if (data.session) router.push("/dashboard");
+
     if (error) {
       toast({
         variant: "destructive",
