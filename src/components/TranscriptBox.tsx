@@ -62,6 +62,7 @@ export default function TranscriptBox(props: {
             {props.data.map((v, i) => {
               return (
                 <TranscriptTime
+                  key={i}
                   text={v.text}
                   time={v.time}
                   goto={(min: Number) => props.handleSeek(10 * i)}

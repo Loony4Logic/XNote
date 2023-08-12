@@ -33,7 +33,7 @@ const TranscriptData = [
   { text: "I am tring", time: "0:1" },
 ];
 
-export default function studyroom({ params }: { params: { id: string } }) {
+export default function Studyroom({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
