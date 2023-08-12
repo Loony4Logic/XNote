@@ -39,6 +39,7 @@ export default function studyroom({ params }: { params: { id: string } }) {
   const supabase = createClientComponentClient();
   const playerRef = useRef<ReactPlayer>(null);
   const [play, setPlay] = useState<boolean>(false);
+  const [value, setValue] = useState<string | undefined>("**Hello world!!!**");
 
   const handlePlayPause = () => {
     setPlay(!play);
@@ -76,16 +77,25 @@ export default function studyroom({ params }: { params: { id: string } }) {
               ></Player>
             </div>
             <div className="w-1/4 h-full">
-              <TranscriptBox data={TranscriptData} handleSeek={handleSeek} />
+              <TranscriptBox
+                data={TranscriptData}
+                handleSeek={handleSeek}
+                addTranscript={(text: string) => {
+                  let newValue = `${value}\n> ${text} \n`;
+                  setValue(newValue);
+                }}
+              />
             </div>
           </div>
-          <div className="h-1/2">
+          <div>
             <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
               Notes:
             </h2>
             <hr />
             <br />
-            <Editor />
+            <div>
+              <Editor value={value} setValue={setValue} />
+            </div>
           </div>
         </div>
       ) : (

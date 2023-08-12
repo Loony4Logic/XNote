@@ -18,14 +18,22 @@ function TranscriptTime({
   text,
   time,
   goto,
+  addTranscript,
 }: {
   text: string;
   time: string;
   goto: Function;
+  addTranscript: Function;
 }) {
   return (
     <>
-      <div className="flex gap-6 mx-2 items-center" onClick={() => goto()}>
+      <div
+        className="flex gap-6 mx-2 items-center"
+        onClick={() => {
+          goto();
+          addTranscript(text);
+        }}
+      >
         <Badge variant="secondary">{time}</Badge>
         <span>{text}</span>
       </div>
@@ -37,6 +45,7 @@ function TranscriptTime({
 export default function TranscriptBox(props: {
   data: TimePoint[];
   handleSeek: Function;
+  addTranscript: Function;
 }) {
   return (
     <Card className="h-full">
@@ -50,12 +59,15 @@ export default function TranscriptBox(props: {
       <CardContent className="h-4/6">
         <ScrollArea className="h-full rounded-md border p-4">
           <div className="flex flex-col gap-1">
-            {props.data.map((v) => {
+            {props.data.map((v, i) => {
               return (
                 <TranscriptTime
                   text={v.text}
                   time={v.time}
-                  goto={(min: Number) => props.handleSeek(10)}
+                  goto={(min: Number) => props.handleSeek(10 * i)}
+                  addTranscript={(text: string) => {
+                    props.addTranscript(text);
+                  }}
                 />
               );
             })}
