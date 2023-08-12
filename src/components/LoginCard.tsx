@@ -13,15 +13,71 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+import { useState } from "react";
+import { useToast } from "./ui/use-toast";
 
 export function LoginCard() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const router = useRouter();
+  const supabase = createClientComponentClient();
+  const { toast } = useToast();
+
+  const handleSignUp = async () => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${location.origin}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+      });
+    }
+
+    if (data.user) {
+      toast({
+        variant: "default",
+        title: "Success!",
+        description: `Please check email ${data.user.email}`,
+        color: "green",
+      });
+    }
+    router.refresh();
+  };
+
+  const handleSignIn = async () => {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Uh oh! Something went wrong.",
+        description: error?.message,
+      });
+    }
+    router.refresh();
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    router.refresh();
+  };
   return (
     <Card>
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl">Create an account</CardTitle>
         <CardDescription>
-          Enter your email below to create your account
+          Enter your email below to create / sign in into your account
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -47,19 +103,34 @@ export function LoginCard() {
         </div>
         <div className="grid gap-2">
           <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="m@example.com" />
+          <Input
+            value={email}
+            id="email"
+            name="email"
+            type="email"
+            placeholder="m@example.com"
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="password">Password</Label>
-          <Input id="password" type="password" />
+          <Input
+            value={password}
+            id="password"
+            name="password"
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
         </div>
       </CardContent>
       <CardFooter>
-        <Button
-          className="w-full"
-          onClick={() => router.push("/studyroom/123")}
-        >
+        <Button className="w-full" onClick={async () => await handleSignUp()}>
           Create account
+        </Button>
+        <Button className="w-full" onClick={async () => await handleSignIn()}>
+          Login Account
         </Button>
       </CardFooter>
     </Card>
