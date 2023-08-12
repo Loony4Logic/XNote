@@ -32,30 +32,7 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
-
-const DashboardNavbar = () => {
-  return (
-    <>
-      <div className="flex flex-row justify-between p-2 border-b-2">
-        <div>X note making world a better place</div>
-        <div>
-          <Menu />
-        </div>
-      </div>
-    </>
-  );
-};
-
-const DashboardFooter = () => {
-  return (
-    <>
-      <div className="flex flex-row p-2 border-t-2">
-        {" "}
-        Here footer content will go{" "}
-      </div>
-    </>
-  );
-};
+import Navbar from "@/components/Navbar";
 
 type StudyRoomCardProps = {
   studyRoom: any;
@@ -243,56 +220,51 @@ export default function Dashboard() {
     <>
       <div>
         <div className="flex flex-col p-2">
-          <DashboardNavbar />
+          <Navbar title={"Dashboard"} />
 
-          {/* Middle Content */}
-          <Suspense fallback={<Skeleton className="w-[100%] h-[400px]" />}>
-            <div className="grid grid-cols-1 gap-8 px-[10%] pt-8">
-              <div id="dashbaord-content-header" className="grid grid-cols-2">
-                <div className="flex flex-row items-center gap-x-2">
-                  {" "}
-                  <span>Study Rooms</span>
-                  <Separator orientation="vertical" />
-                  <Badge>{studyRooms?.length ? studyRooms.length : 0}</Badge>
-                </div>
-                <div className="flex flex-row items-center gap-x-2">
-                  {" "}
-                  <Input
-                    value={addUrl}
-                    onChange={(e) => setAddUrl(e.target.value)}
-                    type="search"
-                    placeholder="Enter the url to add new video"
-                  />
-                  <Button
-                    onClick={async () => {
-                      await createStudyRoomHandler();
-                    }}
-                  >
-                    <Plus fontSize={"small"} />
-                  </Button>
-                </div>
+          <div className="grid grid-cols-1 gap-8 px-[10%] pt-8">
+            <div id="dashbaord-content-header" className="grid grid-cols-2">
+              <div className="flex flex-row items-center gap-x-2">
+                {" "}
+                <span>Study Rooms</span>
+                <Separator orientation="vertical" />
+                <Badge>{studyRooms?.length ? studyRooms.length : 0}</Badge>
               </div>
-              {isLoading && <Skeleton className="w-[100%] h-[50vh]" />}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 ">
-                {!isLoading &&
-                  studyRooms?.length >= 1 &&
-                  studyRooms?.map((studyRoom: any, index: number) => {
-                    return (
-                      <>
-                        <StudyRoomCard
-                          key={`sc_${index}`}
-                          studyRoom={studyRoom}
-                          viewStudyRoomHandler={viewStudyRoomHandler}
-                          deleteStudyRoomHandler={deleteStudyRoomHandler}
-                        />
-                      </>
-                    );
-                  })}
+              <div className="flex flex-row items-center gap-x-2">
+                {" "}
+                <Input
+                  value={addUrl}
+                  onChange={(e) => setAddUrl(e.target.value)}
+                  type="search"
+                  placeholder="Enter the url to add new video"
+                />
+                <Button
+                  onClick={async () => {
+                    await createStudyRoomHandler();
+                  }}
+                >
+                  <Plus fontSize={"small"} />
+                </Button>
               </div>
             </div>
-          </Suspense>
-
-          <DashboardFooter />
+            {isLoading && <Skeleton className="w-[100%] h-[50vh]" />}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 ">
+              {!isLoading &&
+                studyRooms?.length >= 1 &&
+                studyRooms?.map((studyRoom: any, index: number) => {
+                  return (
+                    <>
+                      <StudyRoomCard
+                        key={`sc_${index}`}
+                        studyRoom={studyRoom}
+                        viewStudyRoomHandler={viewStudyRoomHandler}
+                        deleteStudyRoomHandler={deleteStudyRoomHandler}
+                      />
+                    </>
+                  );
+                })}
+            </div>
+          </div>
         </div>
       </div>
     </>

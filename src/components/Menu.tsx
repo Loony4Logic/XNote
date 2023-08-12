@@ -10,17 +10,22 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "./ui/button";
+import { LayoutDashboard, LogOut } from "lucide-react";
 
 export default function Menu() {
   const router = useRouter();
   const supabase = createClientComponentClient();
 
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.refresh();
+  const handleSignOut = () => {
+    supabase.auth
+      .signOut()
+      .then((res) => {
+        router.push("/");
+      })
+      .catch((err) => console.log(err));
   };
   return (
-    <DropdownMenu>
+    <DropdownMenu dir="ltr">
       <DropdownMenuTrigger>
         <Avatar>
           <AvatarImage src="https://github.com/shadcn.png" />
@@ -28,19 +33,24 @@ export default function Menu() {
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem>Dashboard</DropdownMenuItem>
         <DropdownMenuItem>
-          <Button onClick={(e) => router.push("/studyroom/123")}>
-            {" "}
-            Study Room
+          <Button variant={"link"} onClick={(e) => router.push("/dashboard")}>
+            <LayoutDashboard className="h-4 w-4 mx-1" /> Dashboard
           </Button>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={async (e) => await handleSignOut()}>
-          <Button onClick={async (e) => await handleSignOut()}> Logout</Button>
+        {/* <DropdownMenuItem>
+          <Button
+            variant={"link"}
+            onClick={(e) => router.push("/studyroom/123")}
+          >
+            Study Room
+          </Button>
+        </DropdownMenuItem> */}
+        <DropdownMenuItem>
+          <Button variant={"link"} onClick={(e) => handleSignOut()}>
+            <LogOut className="h-4 w-4 mx-1" /> Logout
+          </Button>
         </DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
