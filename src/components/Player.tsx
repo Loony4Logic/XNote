@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import ReactPlayer, { ReactPlayerProps } from "react-player/lazy";
 import { Input } from "@/components/ui/input";
 import { OnProgressProps } from "react-player/base";
@@ -22,33 +22,23 @@ type debugValueType = {
 };
 
 interface PlayerProps {
+  url: string;
+  playerRef: RefObject<ReactPlayer>;
+  play: boolean;
   debug?: boolean;
 }
 
 // uncontrolled component -> need to discuss if it needs to be controlled or uncontrolled
 // debugValue logic has some bugs , only for testing for now
-const Player = (props: PlayerProps) => {
-  const playerRef = useRef<ReactPlayer>(null);
-  const [playerUrl, setPlayerUrl] = useState<string>(
-    "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-  );
+const Player = ({ url, playerRef, debug, play }: PlayerProps) => {
+  // const playerRef = useRef<ReactPlayer>(null);
   const [debugValues, setDebugValues] = useState<debugValueType>();
-  const { debug } = props;
-  const [play, setPlay] = useState<boolean>(false);
-
-  const handlePlayPause = () => {
-    setPlay(!play);
-  };
-
-  const handleSeek = (value: number) => {
-    playerRef?.current && playerRef?.current?.seekTo(value, "seconds");
-  };
 
   const ReactPlayerInitialize: ReactPlayerProps = {
     playing: play,
     controls: true,
     width: "100%",
-    height: "360px",
+    height: "100%",
     fallback: <p>Loading</p>,
     onError: (error: any) => {
       setDebugValues({ ...debugValues, error: error });
@@ -63,24 +53,10 @@ const Player = (props: PlayerProps) => {
 
   return (
     <>
-      <div id="player-container">
-        <Input
-          type="text"
-          value={playerUrl}
-          placeholder="Enter Url"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            const value = e.target.value;
-            setPlayerUrl(value);
-          }}
-        />
+      <div id="player-container" className="h-full">
+        <ReactPlayer ref={playerRef} url={url} {...ReactPlayerInitialize} />
 
-        <ReactPlayer
-          ref={playerRef}
-          url={playerUrl}
-          {...ReactPlayerInitialize}
-        />
-
-        <Button onClick={handlePlayPause}>Play/Pause</Button>
+        {/* <Button onClick={handlePlayPause}>Play/Pause</Button>
         {[0, 1, 3, 5, 7, 9, 10, 13, 15, 12, 20].map(
           (seconds: number, index: number) => {
             return (
@@ -89,7 +65,7 @@ const Player = (props: PlayerProps) => {
               </Button>
             );
           }
-        )}
+        )} */}
 
         {debug && <pre>{JSON.stringify(debugValues, null, 4)}</pre>}
         {debug && (
