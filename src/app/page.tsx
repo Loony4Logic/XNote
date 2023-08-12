@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { LoginCard } from "@/components/LoginCard";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
