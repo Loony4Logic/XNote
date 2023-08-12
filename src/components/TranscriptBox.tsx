@@ -14,10 +14,18 @@ type TimePoint = {
   time: string;
 };
 
-function TranscriptTime({ text, time }: TimePoint) {
+function TranscriptTime({
+  text,
+  time,
+  goto,
+}: {
+  text: string;
+  time: string;
+  goto: Function;
+}) {
   return (
     <>
-      <div className="flex gap-6 mx-2 items-center">
+      <div className="flex gap-6 mx-2 items-center" onClick={() => goto()}>
         <Badge variant="secondary">{time}</Badge>
         <span>{text}</span>
       </div>
@@ -26,7 +34,10 @@ function TranscriptTime({ text, time }: TimePoint) {
   );
 }
 
-export default function TranscriptBox(props: { data: TimePoint[] }) {
+export default function TranscriptBox(props: {
+  data: TimePoint[];
+  handleSeek: Function;
+}) {
   return (
     <Card className="h-full">
       <CardHeader>
@@ -40,7 +51,13 @@ export default function TranscriptBox(props: { data: TimePoint[] }) {
         <ScrollArea className="h-full rounded-md border p-4">
           <div className="flex flex-col gap-1">
             {props.data.map((v) => {
-              return <TranscriptTime text={v.text} time={v.time} />;
+              return (
+                <TranscriptTime
+                  text={v.text}
+                  time={v.time}
+                  goto={(min: Number) => props.handleSeek(10)}
+                />
+              );
             })}
           </div>
         </ScrollArea>

@@ -4,9 +4,10 @@ import Player from "@/components/Player";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import LayoutSkeleton from "@/components/LayoutSkeleton";
 import TranscriptBox from "@/components/TranscriptBox";
+import ReactPlayer from "react-player";
 
 const TranscriptData = [
   { text: "I am tring", time: "0:1" },
@@ -36,6 +37,12 @@ export default function studyroom({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setLoading] = useState(true);
   const supabase = createClientComponentClient();
+  const playerRef = useRef<ReactPlayer>(null);
+  const [play, setPlay] = useState<boolean>(false);
+
+  const handlePlayPause = () => {
+    setPlay(!play);
+  };
 
   useEffect(() => {
     async function getStudyroomData() {
@@ -51,16 +58,25 @@ export default function studyroom({ params }: { params: { id: string } }) {
     getStudyroomData();
   }, []);
 
+  const handleSeek = (value: number) => {
+    playerRef?.current && playerRef?.current?.seekTo(value, "seconds");
+    setPlay(true);
+  };
+
   return (
     <>
       {data ? (
         <div className="flex flex-col w-100 h-screen gap-2 m-2">
           <div className="flex flex-row h-1/2 gap-2">
             <div className="w-3/4">
-              <Player url={data.videoURL}></Player>
+              <Player
+                url={data.videoURL}
+                playerRef={playerRef}
+                play={play}
+              ></Player>
             </div>
             <div className="w-1/4 h-full">
-              <TranscriptBox data={TranscriptData} />
+              <TranscriptBox data={TranscriptData} handleSeek={handleSeek} />
             </div>
           </div>
           <div className="h-1/2">

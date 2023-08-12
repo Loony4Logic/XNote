@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { RefObject, useEffect, useRef, useState } from "react";
 import ReactPlayer, { ReactPlayerProps } from "react-player/lazy";
 import { Input } from "@/components/ui/input";
 import { OnProgressProps } from "react-player/base";
@@ -23,23 +23,16 @@ type debugValueType = {
 
 interface PlayerProps {
   url: string;
+  playerRef: RefObject<ReactPlayer>;
+  play: boolean;
   debug?: boolean;
 }
 
 // uncontrolled component -> need to discuss if it needs to be controlled or uncontrolled
 // debugValue logic has some bugs , only for testing for now
-const Player = ({ url, debug }: PlayerProps) => {
-  const playerRef = useRef<ReactPlayer>(null);
+const Player = ({ url, playerRef, debug, play }: PlayerProps) => {
+  // const playerRef = useRef<ReactPlayer>(null);
   const [debugValues, setDebugValues] = useState<debugValueType>();
-  const [play, setPlay] = useState<boolean>(false);
-
-  const handlePlayPause = () => {
-    setPlay(!play);
-  };
-
-  const handleSeek = (value: number) => {
-    playerRef?.current && playerRef?.current?.seekTo(value, "seconds");
-  };
 
   const ReactPlayerInitialize: ReactPlayerProps = {
     playing: play,
