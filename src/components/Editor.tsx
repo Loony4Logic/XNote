@@ -15,14 +15,23 @@ export default function Editor({
   syncData: Function;
 }) {
   return (
-    <MDEditor
-      value={value}
-      onChange={(value: string | undefined) => {
-        setValue(value);
-        syncData(value);
-        return;
-      }}
-      height={250}
-    />
+    <>
+      <div data-color-mode="dark">
+        {" "}
+        <MDEditor
+          style={{ backgroundColor: "white", color: "white" }}
+          value={value}
+          onChange={(value: string | undefined) => {
+            setValue(value);
+            syncData(value);
+            return;
+          }}
+          height={250}
+          textareaProps={{
+            style: { backgroundColor: "black", color: "white" },
+          }}
+        />
+      </div>
+    </>
   );
 }

@@ -19,6 +19,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Navbar from "@/components/Navbar";
+import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export default function Home() {
   return (
