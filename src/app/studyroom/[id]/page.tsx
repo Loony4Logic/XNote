@@ -72,7 +72,7 @@ export default function Studyroom({ params }: { params: { id: string } }) {
         }
       />
       {data ? (
-        <div className="flex flex-col w-100 h-screen gap-2 m-2">
+        <div className="flex flex-col w-100 h-screen gap-6 m-4">
           <div className="flex flex-row h-1/2 gap-2">
             <div className="w-4/6">
               <Player
@@ -95,21 +95,14 @@ export default function Studyroom({ params }: { params: { id: string } }) {
             </div>
           </div>
           <div>
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-              Notes:
-            </h2>
-            <hr />
-            <br />
-            <div>
-              <Editor
-                value={value}
-                setValue={(val: string) => {
-                  setValue(val);
-                  setIsSync(false);
-                }}
-                syncData={syncData}
-              />
-            </div>
+            <Editor
+              value={value}
+              setValue={(val: string) => {
+                setValue(val);
+                setIsSync(false);
+              }}
+              syncData={syncData}
+            />
           </div>
         </div>
       ) : (

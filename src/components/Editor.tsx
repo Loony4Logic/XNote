@@ -25,7 +25,7 @@ export default function Editor({
             syncData(value);
             return;
           }}
-          height={250}
+          height={300}
         />
       </div>
     </>
