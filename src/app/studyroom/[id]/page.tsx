@@ -10,30 +10,6 @@ import TranscriptBox from "@/components/TranscriptBox";
 import ReactPlayer from "react-player";
 import { debounce } from "lodash";
 
-const TranscriptData = [
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-];
-
 export default function Studyroom({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setLoading] = useState(true);
@@ -87,11 +63,13 @@ export default function Studyroom({ params }: { params: { id: string } }) {
                 url={data.videoURL}
                 playerRef={playerRef}
                 play={play}
+                debug
               ></Player>
             </div>
             <div className="w-1/4 h-full">
               <TranscriptBox
-                data={TranscriptData}
+                link={data.videoURL}
+                duration={playerRef?.current?.getDuration() || 500}
                 handleSeek={handleSeek}
                 addTranscript={(text: string) => {
                   let newValue = `${value}\n> ${text} \n`;
