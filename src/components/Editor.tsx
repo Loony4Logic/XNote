@@ -19,7 +19,6 @@ export default function Editor({
       <div data-color-mode="dark">
         {" "}
         <MDEditor
-          style={{ backgroundColor: "white", color: "white" }}
           value={value}
           onChange={(value: string | undefined) => {
             setValue(value);
@@ -27,9 +26,6 @@ export default function Editor({
             return;
           }}
           height={250}
-          textareaProps={{
-            style: { backgroundColor: "black", color: "white" },
-          }}
         />
       </div>
     </>

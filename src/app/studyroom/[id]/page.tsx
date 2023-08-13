@@ -9,10 +9,14 @@ import LayoutSkeleton from "@/components/LayoutSkeleton";
 import TranscriptBox from "@/components/TranscriptBox";
 import ReactPlayer from "react-player";
 import { debounce } from "lodash";
+import Navbar from "@/components/Navbar";
+import { FileCheck2, FileX2 } from "lucide-react";
+import StudyroomNavitems from "@/components/StudyroomNavitems";
 
 export default function Studyroom({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setLoading] = useState(true);
+  const [isSync, setIsSync] = useState(true);
   const supabase = createClientComponentClient();
   const playerRef = useRef<ReactPlayer>(null);
   const [play, setPlay] = useState<boolean>(false);
@@ -23,9 +27,10 @@ export default function Studyroom({ params }: { params: { id: string } }) {
       .from("studyroom")
       .update({ note: data })
       .eq("id", params.id);
-    console.log("data sent");
+    setIsSync(true);
+    console.log("Data has been set");
     if (error) console.error(error);
-  }, 10000);
+  }, 2 * 60 * 1000);
 
   const handlePlayPause = () => {
     setPlay(!play);
@@ -55,6 +60,17 @@ export default function Studyroom({ params }: { params: { id: string } }) {
 
   return (
     <>
+      <Navbar
+        title=""
+        navItems={
+          <StudyroomNavitems
+            title={data.title || "StudyRoom"}
+            description={data.description || ""}
+            videoURL={data.videoURL}
+            syncStatus={isSync}
+          />
+        }
+      />
       {data ? (
         <div className="flex flex-col w-100 h-screen gap-2 m-2">
           <div className="flex flex-row h-1/2 gap-2">
@@ -73,6 +89,7 @@ export default function Studyroom({ params }: { params: { id: string } }) {
                 addTranscript={(text: string) => {
                   let newValue = `${value}\n> ${text} \n`;
                   setValue(newValue);
+                  setIsSync(false);
                 }}
               />
             </div>
@@ -84,7 +101,14 @@ export default function Studyroom({ params }: { params: { id: string } }) {
             <hr />
             <br />
             <div>
-              <Editor value={value} setValue={setValue} syncData={syncData} />
+              <Editor
+                value={value}
+                setValue={(val: string) => {
+                  setValue(val);
+                  setIsSync(false);
+                }}
+                syncData={syncData}
+              />
             </div>
           </div>
         </div>

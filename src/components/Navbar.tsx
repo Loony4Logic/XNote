@@ -1,5 +1,4 @@
 "use client";
-import { Separator } from "@radix-ui/react-separator";
 import Menu from "./Menu";
 import {
   NavigationMenu,
@@ -10,8 +9,15 @@ import {
 import { useTheme } from "next-themes";
 import { Moon, Sun, SunMoon } from "lucide-react";
 import { Button } from "./ui/button";
+import { Children } from "react";
 
-export default function Navbar({ title }: { title: string }) {
+export default function Navbar({
+  title,
+  navItems,
+}: {
+  title: string;
+  navItems?: React.ReactNode;
+}) {
   const { setTheme, theme } = useTheme();
   const renderThemeIcon = () => {
     if (theme === "system") return <SunMoon />;
@@ -26,6 +32,7 @@ export default function Navbar({ title }: { title: string }) {
         <div className="text-xl text-slate-500 dark:text-slate-400 underline">
           {title}
         </div>
+        {navItems}
       </div>
 
       <div className="flex flex-row items-center gap-x-4">
