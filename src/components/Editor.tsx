@@ -16,18 +16,17 @@ export default function Editor({
 }) {
   return (
     <>
-      <div data-color-mode="dark">
-        {" "}
-        <MDEditor
-          value={value}
-          onChange={(value: string | undefined) => {
-            setValue(value);
-            syncData(value);
-            return;
-          }}
-          height={500}
-        />
-      </div>
+      {" "}
+      <MDEditor
+        data-color-mode={"dark"}
+        value={value}
+        onChange={(value: string | undefined) => {
+          setValue(value);
+          syncData(value);
+          return;
+        }}
+        height={500}
+      />
     </>
   );
 }
