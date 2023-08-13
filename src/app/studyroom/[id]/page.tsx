@@ -58,15 +58,14 @@ export default function Studyroom({ params }: { params: { id: string } }) {
       {data ? (
         <div className="flex flex-col w-100 h-screen gap-2 m-2">
           <div className="flex flex-row h-1/2 gap-2">
-            <div className="w-3/4">
+            <div className="w-4/6">
               <Player
                 url={data.videoURL}
                 playerRef={playerRef}
                 play={play}
-                debug
               ></Player>
             </div>
-            <div className="w-1/4 h-full">
+            <div className="w-2/6 h-full">
               <TranscriptBox
                 link={data.videoURL}
                 duration={playerRef?.current?.getDuration() || 500}

@@ -65,7 +65,6 @@ export default function TranscriptBox(props: {
       );
       if (!data.length) {
         data = [];
-        console.log(props.duration);
         for (let i = 0; i < props.duration; i += 10) {
           data.push({
             text: "Add note here",
