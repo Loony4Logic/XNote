@@ -42,6 +42,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import Link from "next/link";
 
 type StudyRoomCardProps = {
   studyRoom: any;
@@ -57,7 +58,7 @@ const StudyRoomCard = ({
     <Card className="shadow-md">
       <CardHeader>
         <CardTitle className="truncate">
-          {studyRoom?.title ? `🚀 ${studyRoom?.title}` : " 🚀 Study Room "}
+          {studyRoom?.title ? `📝 ${studyRoom?.title}` : " 📝 Study Room "}
         </CardTitle>
         <CardDescription className="truncate mt-2">
           {studyRoom?.created_at &&
@@ -120,13 +121,11 @@ const StudyRoomCard = ({
           </AlertDialogContent>
         </AlertDialog>
 
-        <Button
-          onClick={(e) => {
-            viewStudyRoomHandler(studyRoom);
-          }}
-        >
-          <Eye className="h-4 w-4" />
-        </Button>
+        <Link href={`/studyroom/${studyRoom?.id}`}>
+          <Button>
+            <Eye className="h-4 w-4" />
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
@@ -240,28 +239,33 @@ export default function Dashboard() {
           <Navbar title={"Dashboard"} />
 
           <div className="grid grid-cols-1 gap-8 px-[10%] pt-8">
-            <div id="dashbaord-content-header" className="grid grid-cols-2">
+            <div
+              id="dashbaord-content-header"
+              className="grid grid-cols-3 justify-around"
+            >
               <div className="flex flex-row items-center gap-x-2">
-                {" "}
-                <span>Study Rooms</span>
+                <span className="font-semibold">Study Rooms</span>
                 <Separator orientation="vertical" />
                 <Badge>{studyRooms?.length ? studyRooms.length : 0}</Badge>
               </div>
-              <div className="flex flex-row items-center gap-x-2">
-                {" "}
+
+              <div className="flex flex-row items-center justify-center gap-x-2">
                 <Input
                   value={addUrl}
                   onChange={(e) => setAddUrl(e.target.value)}
                   type="search"
                   placeholder="Enter the url to add new video"
                 />
+              </div>
+
+              <div className="flex flex-row items-center justify-end gap-x-2">
                 <Dialog open={open} onOpenChange={setOpen}>
                   <DialogTrigger asChild>
                     <Button
-                      className="rounded-full"
+                      className="rounded-full h-[70%]"
                       onClick={(e) => setOpen(true)}
                     >
-                      <Plus className="w-4 h-4" fontSize={"small"} />
+                      <Plus className="w-4 h-4 mr-1" /> Add
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[425px] md:max-w-[50%]">
