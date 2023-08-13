@@ -1,3 +1,4 @@
+"use client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,20 +11,34 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRouter } from "next/navigation";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Button } from "./ui/button";
-import { LayoutDashboard, LogOut, Moon, MoonStar, Sun } from "lucide-react";
+import {
+  LayoutDashboard,
+  Loader2,
+  LogOut,
+  Moon,
+  MoonStar,
+  Sun,
+} from "lucide-react";
 import { useTheme } from "next-themes";
+import { useState } from "react";
+import Link from "next/link";
 
 export default function Menu() {
   const router = useRouter();
   const supabase = createClientComponentClient();
+  const [isloading, setIsLoading] = useState<boolean>(false);
 
   const handleSignOut = () => {
+    setIsLoading(true);
     supabase.auth
       .signOut()
       .then((res) => {
+        setIsLoading(false);
         router.push("/");
       })
       .catch((err) => console.log(err));
+
+    setIsLoading(false);
   };
   return (
     <DropdownMenu dir="ltr">
@@ -35,9 +50,11 @@ export default function Menu() {
       </DropdownMenuTrigger>
       <DropdownMenuContent>
         <DropdownMenuItem>
-          <Button variant={"link"} onClick={(e) => router.push("/dashboard")}>
-            <LayoutDashboard className="h-4 w-4 mx-1" /> Dashboard
-          </Button>
+          <Link href={"/dashboard"}>
+            <Button variant={"link"}>
+              <LayoutDashboard className="h-4 w-4 mx-1" /> Dashboard
+            </Button>
+          </Link>
         </DropdownMenuItem>
         {/* <DropdownMenuItem>
           <Button
@@ -49,7 +66,12 @@ export default function Menu() {
         </DropdownMenuItem> */}
         <DropdownMenuItem>
           <Button variant={"link"} onClick={(e) => handleSignOut()}>
-            <LogOut className="h-4 w-4 mx-1" /> Logout
+            {isloading ? (
+              <Loader2 className="h-4 w-4 mx-1 spinloader" />
+            ) : (
+              <LogOut className="h-4 w-4 mx-1" />
+            )}{" "}
+            Logout
           </Button>
         </DropdownMenuItem>
       </DropdownMenuContent>
