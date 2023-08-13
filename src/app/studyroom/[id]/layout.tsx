@@ -21,7 +21,7 @@ export default function VideoEditorLayout({
 }) {
   return (
     <div>
-      <Navbar title={"Study Room"} />
+      {/* <Navbar title={"Study Room"} /> */}
       {children}
     </div>
   );

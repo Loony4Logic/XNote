@@ -9,34 +9,14 @@ import LayoutSkeleton from "@/components/LayoutSkeleton";
 import TranscriptBox from "@/components/TranscriptBox";
 import ReactPlayer from "react-player";
 import { debounce } from "lodash";
-
-const TranscriptData = [
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-  { text: "I am tring", time: "0:1" },
-];
+import Navbar from "@/components/Navbar";
+import { FileCheck2, FileX2 } from "lucide-react";
+import StudyroomNavitems from "@/components/StudyroomNavitems";
 
 export default function Studyroom({ params }: { params: { id: string } }) {
   const [data, setData] = useState<any>();
   const [isLoading, setLoading] = useState(true);
+  const [isSync, setIsSync] = useState(true);
   const supabase = createClientComponentClient();
   const playerRef = useRef<ReactPlayer>(null);
   const [play, setPlay] = useState<boolean>(false);
@@ -47,9 +27,10 @@ export default function Studyroom({ params }: { params: { id: string } }) {
       .from("studyroom")
       .update({ note: data })
       .eq("id", params.id);
-    console.log("data sent");
+    setIsSync(true);
+    console.log("Data has been set");
     if (error) console.error(error);
-  }, 10000);
+  }, 30 * 1000);
 
   const handlePlayPause = () => {
     setPlay(!play);
@@ -79,36 +60,49 @@ export default function Studyroom({ params }: { params: { id: string } }) {
 
   return (
     <>
+      <Navbar
+        title=""
+        navItems={
+          <StudyroomNavitems
+            title={data?.title || "StudyRoom"}
+            description={data?.description || ""}
+            videoURL={data?.videoURL}
+            syncStatus={isSync}
+          />
+        }
+      />
       {data ? (
-        <div className="flex flex-col w-100 h-screen gap-2 m-2">
+        <div className="flex flex-col w-100 h-screen gap-6 m-4">
           <div className="flex flex-row h-1/2 gap-2">
-            <div className="w-3/4">
+            <div className="w-4/6">
               <Player
                 url={data.videoURL}
                 playerRef={playerRef}
                 play={play}
               ></Player>
             </div>
-            <div className="w-1/4 h-full">
+            <div className="w-2/6 h-full">
               <TranscriptBox
-                data={TranscriptData}
+                link={data.videoURL}
+                duration={playerRef?.current?.getDuration() || 500}
                 handleSeek={handleSeek}
                 addTranscript={(text: string) => {
                   let newValue = `${value}\n> ${text} \n`;
                   setValue(newValue);
+                  setIsSync(false);
                 }}
               />
             </div>
           </div>
           <div>
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0">
-              Notes:
-            </h2>
-            <hr />
-            <br />
-            <div>
-              <Editor value={value} setValue={setValue} syncData={syncData} />
-            </div>
+            <Editor
+              value={value}
+              setValue={(val: string) => {
+                setValue(val);
+                setIsSync(false);
+              }}
+              syncData={syncData}
+            />
           </div>
         </div>
       ) : (
