@@ -239,11 +239,12 @@ export default function Dashboard() {
                   placeholder="Enter the url to add new video"
                 />
                 <Button
+                  className="rounded-full"
                   onClick={async () => {
                     await createStudyRoomHandler();
                   }}
                 >
-                  <Plus fontSize={"small"} />
+                  <Plus className="w-4 h-4" fontSize={"small"} />
                 </Button>
               </div>
             </div>

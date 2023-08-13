@@ -5,7 +5,7 @@ export default function Loading() {
   return (
     <>
       <div className="w-full h-[400px] place-content-center">
-        <img src="/loading.gif" className="m-auto" />
+        <img src="/loading.png" className="m-auto rocket" />
       </div>
     </>
   );
