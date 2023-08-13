@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-dynamic";
 
 import Menu from "@/components/Menu";
 import { Badge } from "@/components/ui/badge";
@@ -49,7 +50,7 @@ import { DialogProps } from "@radix-ui/react-dialog";
 import ReactDOMServer from "react-dom/server";
 
 // @ts-ignore
-import html2pdf from "html2pdf.js/dist/html2pdf.min";
+import html2pdf from "html2pdf.js/dist/html2pdf.min.js";
 
 type DialogWrapperProps = {
   mdString: string;
