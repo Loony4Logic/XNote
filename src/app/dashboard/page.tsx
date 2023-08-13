@@ -33,6 +33,15 @@ import {
   AlertDialogFooter,
 } from "@/components/ui/alert-dialog";
 import Navbar from "@/components/Navbar";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
 type StudyRoomCardProps = {
   studyRoom: any;
@@ -60,11 +69,10 @@ const StudyRoomCard = ({
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          {studyRoom?.description && (
-            <p className="line-clamp-3 text-color-slate-500">
-              {studyRoom?.description}
-            </p>
-          )}
+          <p className="line-clamp-3 text-color-slate-500">
+            {studyRoom?.description && studyRoom?.description}
+          </p>
+
           <p className="truncate space-x-0.5 text-base italic">
             <a
               href={studyRoom?.videoURL}
@@ -75,11 +83,12 @@ const StudyRoomCard = ({
             </a>
           </p>
           <p className="line-clamp-2 space-x-0.5 space-y-0.5">
-            {["#tag1", "#tag2", "#tag4"].map((tag, index) => (
-              <Badge variant={"secondary"} key={`tag_${index}`}>
-                {tag}
-              </Badge>
-            ))}
+            {studyRoom?.tags &&
+              studyRoom?.tags?.split(",").map((tag: any, index: number) => (
+                <Badge variant={"secondary"} key={`tag_${index}`}>
+                  {tag}
+                </Badge>
+              ))}
           </p>
         </div>
       </CardContent>
@@ -128,9 +137,13 @@ export default function Dashboard() {
   //   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [addUrl, setAddUrl] = useState<string>();
+  const [title, setTitle] = useState<string>();
+  const [description, setDescription] = useState<string>();
+  const [tags, setTags] = useState<string>();
   const { toast } = useToast();
   const supabase = createClientComponentClient();
   const [refresh, setRefresh] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const getStudyRoomData = async () => {
@@ -153,6 +166,7 @@ export default function Dashboard() {
     };
 
     getStudyRoomData();
+    console.log(URL);
   }, [refresh]);
 
   const createStudyRoomHandler = async () => {
@@ -160,14 +174,17 @@ export default function Dashboard() {
     try {
       if (!addUrl) {
         throw new Error("Please add a url");
+      } else if (!title) {
+        throw new Error("Please add a title");
       } else {
         const { data, error } = await supabase
           .from("studyroom")
-          .insert([{ videoURL: addUrl }]);
+          .insert([{ videoURL: addUrl, title: title, tags: tags }]);
 
         if (error) throw new Error(error?.message);
 
         setRefresh(!refresh);
+        setOpen(false);
       }
     } catch (error: any) {
       if (error instanceof Error)
@@ -238,14 +255,79 @@ export default function Dashboard() {
                   type="search"
                   placeholder="Enter the url to add new video"
                 />
-                <Button
-                  className="rounded-full"
-                  onClick={async () => {
-                    await createStudyRoomHandler();
-                  }}
-                >
-                  <Plus className="w-4 h-4" fontSize={"small"} />
-                </Button>
+                <Dialog open={open} onOpenChange={setOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      className="rounded-full"
+                      onClick={(e) => setOpen(true)}
+                    >
+                      <Plus className="w-4 h-4" fontSize={"small"} />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] md:max-w-[50%]">
+                    <DialogHeader>
+                      <DialogTitle>Video Details</DialogTitle>
+                      <DialogDescription>
+                        {
+                          "Add Video details . Video URL supports youtube, facebook , soundcloud , mp4 , etc"
+                        }
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid gap-4 py-4">
+                      <div className="grid grid-cols-1 items-start gap-2">
+                        <Label htmlFor="title" className="text-left">
+                          Title
+                        </Label>
+                        <Input
+                          required
+                          id="title"
+                          name="title"
+                          value={title}
+                          className="col-span-3"
+                          onChange={(e) => setTitle(e.target.value)}
+                          placeholder="Title of study room"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 items-start gap-2">
+                        <Label htmlFor="url" className="text-left">
+                          URL
+                        </Label>
+                        <Input
+                          required
+                          id="url"
+                          name="url"
+                          value={addUrl}
+                          className="col-span-3"
+                          onChange={(e) => setAddUrl(e.target.value)}
+                          placeholder="Youtube , Facebook , mp4 , etc video link"
+                        />
+                      </div>
+                      <div className="grid grid-cols-1 items-start gap-2">
+                        <Label htmlFor="tags" className="text-left">
+                          Tags
+                        </Label>
+                        <Input
+                          id="tags"
+                          name="tags"
+                          value={tags}
+                          className="col-span-3"
+                          onChange={(e) => setTags(e.target.value)}
+                          placeholder="Add ',' separated tags . Ex : #code,#food,#trending"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button
+                        onClick={async (e) => {
+                          await createStudyRoomHandler();
+                        }}
+                        type="submit"
+                      >
+                        Add
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
               </div>
             </div>
             {isLoading && <Skeleton className="w-[100%] h-[50vh]" />}
