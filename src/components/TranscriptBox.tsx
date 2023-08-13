@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import customParseFormat from "dayjs/plugin/customParseFormat";
+import { Button } from "./ui/button";
 
 dayjs.extend(duration);
 dayjs.extend(customParseFormat);
@@ -43,7 +44,9 @@ function TranscriptTime({
         }}
       >
         <Badge variant="secondary">{time}</Badge>
-        <span>{text}</span>
+        <Button variant="link" className="text-left">
+          {text}
+        </Button>
       </div>
       <hr />
     </>
@@ -87,7 +90,7 @@ export default function TranscriptBox(props: {
           Editor
         </CardDescription>
       </CardHeader>
-      <CardContent className="h-4/6">
+      <CardContent className="h-3/4">
         <ScrollArea className="h-full rounded-md border p-4">
           <div className="flex flex-col gap-1">
             {transcriptData.map((v, i) => {

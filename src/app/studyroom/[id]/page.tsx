@@ -30,7 +30,7 @@ export default function Studyroom({ params }: { params: { id: string } }) {
     setIsSync(true);
     console.log("Data has been set");
     if (error) console.error(error);
-  }, 2 * 60 * 1000);
+  }, 30 * 1000);
 
   const handlePlayPause = () => {
     setPlay(!play);
