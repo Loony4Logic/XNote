@@ -64,9 +64,9 @@ export default function Studyroom({ params }: { params: { id: string } }) {
         title=""
         navItems={
           <StudyroomNavitems
-            title={data.title || "StudyRoom"}
-            description={data.description || ""}
-            videoURL={data.videoURL}
+            title={data?.title || "StudyRoom"}
+            description={data?.description || ""}
+            videoURL={data?.videoURL}
             syncStatus={isSync}
           />
         }
