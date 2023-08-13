@@ -91,16 +91,17 @@ export default function TranscriptBox(props: {
         <ScrollArea className="h-full rounded-md border p-4">
           <div className="flex flex-col gap-1">
             {transcriptData.map((v, i) => {
+              let currTime = dayjs.duration(v.offset, "ms").format("HH:mm:ss");
               return (
                 <TranscriptTime
                   key={i}
                   text={v.text}
-                  time={dayjs.duration(v.offset, "ms").format("HH:mm:ss")}
+                  time={currTime}
                   goto={() =>
                     props.handleSeek(dayjs.duration(v.offset).asSeconds())
                   }
                   addTranscript={(text: string) => {
-                    props.addTranscript(text);
+                    props.addTranscript(`[${currTime}] ${text}`);
                   }}
                 />
               );
