@@ -19,7 +19,7 @@ import { Label } from "@radix-ui/react-label";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Car, Download, Eye, Plus, RocketIcon, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { ComponentType, Suspense, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import {
   AlertDialog,
@@ -49,13 +49,6 @@ import { DialogProps } from "@radix-ui/react-dialog";
 import ReactDOMServer from "react-dom/server";
 
 // @ts-ignore
-
-import dynamic from "next/dynamic";
-
-// @ts-ignore
-const html2pdf = dynamic(() => import("html2pdf.js/dist/html2pdf.min.js"), {
-  ssr: false,
-});
 
 type DialogWrapperProps = {
   mdString: string;
@@ -94,6 +87,7 @@ const DialogWrapper = ({ mdString, ...dialogProps }: DialogWrapperProps) => {
                 );
 
                 // @ts-ignore
+                // console.log(html2pdf);
                 html2pdf().from(printElement).save();
               }}
             >
