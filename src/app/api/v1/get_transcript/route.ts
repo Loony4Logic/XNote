@@ -6,6 +6,8 @@ import {
   YoutubeTranscriptError,
 } from "youtube-transcript";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const vidUrl = request.nextUrl.searchParams.get("link");

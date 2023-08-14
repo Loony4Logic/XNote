@@ -14,12 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useToast } from "@/components/ui/use-toast";
+import { toast, useToast } from "@/components/ui/use-toast";
 import { Label } from "@radix-ui/react-label";
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
-import { Car, Eye, Plus, RocketIcon, Trash } from "lucide-react";
+import { Car, Download, Eye, Plus, RocketIcon, Trash } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Suspense, useEffect, useState } from "react";
+import { ComponentType, Suspense, useEffect, useMemo, useState } from "react";
 import dayjs from "dayjs";
 import {
   AlertDialog,
@@ -43,6 +43,62 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { debounce } from "lodash";
+import MDEditor from "@uiw/react-md-editor";
+import { DialogProps } from "@radix-ui/react-dialog";
+import ReactDOMServer from "react-dom/server";
+
+// @ts-ignore
+
+type DialogWrapperProps = {
+  mdString: string;
+} & DialogProps;
+const DialogWrapper = ({ mdString, ...dialogProps }: DialogWrapperProps) => {
+  return (
+    <>
+      <Dialog {...dialogProps}>
+        <DialogContent className="sm:max-w-[425px] md:max-w-[50%]">
+          <DialogHeader>
+            <DialogTitle>Notes Preview</DialogTitle>
+          </DialogHeader>
+
+          <div
+            id={`dashboard-pdf-preview`}
+            className="border-2 max-h-[70vh] overflow-auto"
+          >
+            <MDEditor.Markdown
+              data-color-mode="dark"
+              source={mdString}
+              style={{ whiteSpace: "pre-wrap" }}
+            />
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={(e) => {
+                const printElement = ReactDOMServer.renderToString(
+                  <div id={`dashboard-pdf-preview`} className="border-2">
+                    <MDEditor.Markdown
+                      data-color-mode="dark"
+                      source={mdString}
+                      style={{ whiteSpace: "pre-wrap" }}
+                    />
+                  </div>
+                );
+
+                // @ts-ignore
+                // console.log(html2pdf);
+                html2pdf().from(printElement).save();
+              }}
+            >
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
 
 type StudyRoomCardProps = {
   studyRoom: any;
@@ -54,6 +110,20 @@ const StudyRoomCard = ({
   viewStudyRoomHandler,
   deleteStudyRoomHandler,
 }: StudyRoomCardProps) => {
+  const [openViewer, setOpenViewer] = useState(false);
+
+  const downloadPdfHandler = (roomDetails: any) => {
+    if (!roomDetails?.note) {
+      toast({
+        variant: "default",
+        title: "Uh oh! Notes does not exist",
+        description: "Please add some note",
+      });
+    } else {
+      setOpenViewer(true);
+    }
+  };
+
   return (
     <Card className="shadow-md">
       <CardHeader>
@@ -121,12 +191,22 @@ const StudyRoomCard = ({
           </AlertDialogContent>
         </AlertDialog>
 
+        <Button onClick={(e) => downloadPdfHandler(studyRoom)}>
+          <Download className="h-4 m-4" />
+        </Button>
+
         <Link href={`/studyroom/${studyRoom?.id}`}>
           <Button>
             <Eye className="h-4 w-4" />
           </Button>
         </Link>
       </CardFooter>
+
+      <DialogWrapper
+        open={openViewer}
+        onOpenChange={setOpenViewer}
+        mdString={studyRoom?.note || ""}
+      />
     </Card>
   );
 };
@@ -136,6 +216,7 @@ export default function Dashboard() {
   //   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [addUrl, setAddUrl] = useState<string>();
+  const [serachUrl, setSearchUrl] = useState<string>();
   const [title, setTitle] = useState<string>();
   const [description, setDescription] = useState<string>();
   const [tags, setTags] = useState<string>();
@@ -144,26 +225,26 @@ export default function Dashboard() {
   const [refresh, setRefresh] = useState<boolean>(false);
   const [open, setOpen] = useState<boolean>(false);
 
+  const getStudyRoomData = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.from("studyroom").select();
+
+      if (data) setStudyRooms(data);
+      if (error) throw new Error(error.message);
+    } catch (error: any) {
+      console.error(error);
+      if (error instanceof Error)
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: error.message,
+        });
+    }
+    setIsLoading(false);
+  };
+
   useEffect(() => {
-    const getStudyRoomData = async () => {
-      setIsLoading(true);
-      try {
-        const { data, error } = await supabase.from("studyroom").select();
-
-        if (data) setStudyRooms(data);
-        if (error) throw new Error(error.message);
-      } catch (error: any) {
-        console.error(error);
-        if (error instanceof Error)
-          toast({
-            variant: "destructive",
-            title: "Uh oh! Something went wrong.",
-            description: error.message,
-          });
-      }
-      setIsLoading(false);
-    };
-
     getStudyRoomData();
     console.log(URL);
   }, [refresh]);
@@ -231,6 +312,46 @@ export default function Dashboard() {
     }
   };
 
+  const handleSearchChange = async (val: string) => {
+    if (val === "") {
+      getStudyRoomData();
+    } else {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from("studyroom")
+          .select()
+          .textSearch("fts", `${val}`, {
+            type: "websearch",
+            config: "english",
+          });
+
+        if (data) setStudyRooms(data);
+        if (error) throw new Error(error.message);
+      } catch (error: any) {
+        console.log(error);
+        if (error instanceof Error)
+          toast({
+            variant: "destructive",
+            title: "Uh oh! Something went wrong.",
+            description: error.message,
+          });
+      }
+
+      setIsLoading(false);
+    }
+  };
+
+  const debouncedResults = useMemo(() => {
+    return debounce(handleSearchChange, 500);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      debouncedResults.cancel();
+    };
+  }, []);
+
   const router = useRouter();
   return (
     <>
@@ -246,15 +367,18 @@ export default function Dashboard() {
               <div className="flex flex-row items-center gap-x-2">
                 <span className="font-semibold">Study Rooms</span>
                 <Separator orientation="vertical" />
-                <Badge>{studyRooms?.length ? studyRooms.length : 0}</Badge>
+                <Badge>{studyRooms?.length ? studyRooms?.length : 0}</Badge>
               </div>
 
               <div className="flex flex-row items-center justify-center gap-x-2">
                 <Input
-                  value={addUrl}
-                  onChange={(e) => setAddUrl(e.target.value)}
+                  value={serachUrl}
+                  onChange={(e) => {
+                    setSearchUrl(e.target.value);
+                    debouncedResults(e.target.value);
+                  }}
                   type="search"
-                  placeholder="Enter the url to add new video"
+                  placeholder="Search title , tags , note"
                 />
               </div>
 
@@ -351,6 +475,9 @@ export default function Dashboard() {
                   );
                 })}
             </div>
+            {!isLoading && studyRooms?.length <= 0 && (
+              <p> No results found . Please add a study room</p>
+            )}
           </div>
         </div>
       </div>

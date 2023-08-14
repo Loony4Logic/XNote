@@ -28,11 +28,13 @@ function TranscriptTime({
   time,
   goto,
   addTranscript,
+  offset,
 }: {
   text: string;
   time: string;
   goto: Function;
   addTranscript: Function;
+  offset: number;
 }) {
   return (
     <>
@@ -82,16 +84,17 @@ export default function TranscriptBox(props: {
   }, []);
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Transcript</CardTitle>
-        <CardDescription>
-          Click on time to go to time in video. Click on text to mention in
-          Editor
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="h-3/4">
-        <ScrollArea className="h-full rounded-md border p-4">
+    <Card className="h-[100%]">
+      <CardContent className="p-2 h-full">
+        <CardHeader>
+          <CardTitle className="text-lg">Transcript</CardTitle>
+          <CardDescription className="text-sm">
+            Click on time to go to time in video. Click on text to mention in
+            Editor
+          </CardDescription>
+        </CardHeader>
+
+        <div className="h-[calc(100%-123px)] overflow-auto rounded-md border p-4">
           <div className="flex flex-col gap-1">
             {transcriptData.map((v, i) => {
               let currTime = dayjs.duration(v.offset, "ms").format("HH:mm:ss");
@@ -100,6 +103,7 @@ export default function TranscriptBox(props: {
                   key={i}
                   text={v.text}
                   time={currTime}
+                  offset={v.offset}
                   goto={() =>
                     props.handleSeek(dayjs.duration(v.offset).asSeconds())
                   }
@@ -110,7 +114,7 @@ export default function TranscriptBox(props: {
               );
             })}
           </div>
-        </ScrollArea>
+        </div>
       </CardContent>
     </Card>
   );
